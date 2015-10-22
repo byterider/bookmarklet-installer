@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Bookmarklet: Open Jira Ticket</title>
+		<style>
+			#source {
+				font-family: monospace;
+				white-space: pre;
+				tab-size: 4;
+				-moz-tab-size: 4;
+				-o-tab-size: 4;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Bookmarklet: Open Jira Ticket</h1>
+		After entering a PORTAL Jira ticket number, the ticket is displayed.
+
+		<h3>Installation</h3>
+		Drag the following link to your bookmarks bar:
+		<a id="bookmarklet" href="javascript:">Jira</a>
+
+		<h3>Source</h3>
+		<div id="source"></div>
+
+		<script>
+			(function () {
+				'use strict';
+
+				// the bookmarklet code
+				var code = function () {
+					var id = window.prompt('Please enter the Jira ticket number, without PORTAL-', '');
+					if (id) {
+						location.href = 'http://jira.swisscom.com/browse/PORTAL-' + id;
+					} else {
+						location.href = 'http://jira.swisscom.com/';
+					}
+				};
+
+				function stripComments(s) {
+					return s.replace(/\/{2}[^;\n]*$/mg, '');
+				}
+				function extractBody(s) {
+					return s.substring(s.indexOf('{') + 2, s.lastIndexOf('}'));
+				}
+				function collapseWhiteSpace(s) {
+					return s.replace(/([^}{;\s])\s*\n/mg, '$1;\n').replace(/^\s+|\s+$|\n/mg, '');
+				}
+				function outdent(s) {
+					var indentLevel = s.match(/^\s*/)[0].length;
+					return s.replace(new RegExp('^\\s{' + indentLevel + '}', 'mg'), '');
+				}
+				var source = '' + code,
+					bookmarklet = collapseWhiteSpace(extractBody(stripComments(source))),
+					preview = outdent(extractBody(source));
+
+				document.getElementById('bookmarklet').href += bookmarklet;
+				document.getElementById('source').innerText = preview;
+			}());
+		</script>
+	</body>
+</html>
