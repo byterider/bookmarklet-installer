@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Bookmarklet: Open Product Detail Page Preview</title>
+		<link rel="stylesheet" href="https://sdx.scsstatic.ch/v1.23.1/css/sdx.min.css">
+		<style>
+			#source {
+				background: #eee;
+				display: table;
+				font-family: monospace;
+				white-space: pre;
+				tab-size: 4;
+				-moz-tab-size: 4;
+				-o-tab-size: 4;
+			}
+		</style>
+	</head>
+	<body class="padding-4">
+		<h1>Bookmarklet: Open Product Detail Page Preview</h1>
+		<p>After entering a product ID (for example samsung-galaxy-s10-11039069), the preview is displayed.</p>
+
+		<h3>Installation</h3>
+		<p>Drag the following link to your bookmarks bar:
+		<a id="bookmarklet" href="javascript:">PDP-Preview</a></p>
+
+		<h3>Source</h3>
+		<div id="source" class="padding-2"></div>
+
+		<script>
+			(function () {
+				'use strict';
+
+				// the bookmarklet code
+				var code = function () {
+					var id = window.prompt('Please enter a product ID like samsung-galaxy-s10-11039069', '');
+					if (id) {
+						location.href = 'https://cms.swisscom.ch/de/res/mobile/devices_new/device_new.html/' + id + '?wcmmode=disabled';
+					} else {
+						location.href = 'https://cms.swisscom.ch/';
+					}
+				};
+
+				function stripComments(s) {
+					return s.replace(/\/{2}[^;\n]*$/mg, '');
+				}
+				function extractBody(s) {
+					return s.substring(s.indexOf('{') + 2, s.lastIndexOf('}'));
+				}
+				function collapseWhiteSpace(s) {
+					return s.replace(/([^}{;\s])\s*\n/mg, '$1;\n').replace(/^\s+|\s+$|\n/mg, '');
+				}
+				function outdent(s) {
+					var indentLevel = s.match(/^\s*/)[0].length;
+					return s.replace(new RegExp('^\\s{' + indentLevel + '}', 'mg'), '');
+				}
+				var source = '' + code,
+					bookmarklet = collapseWhiteSpace(extractBody(stripComments(source))),
+					preview = outdent(extractBody(source).replace(/\s+$/mg, ''));
+
+				document.getElementById('bookmarklet').href += bookmarklet;
+				document.getElementById('source').innerText = preview;
+			}());
+		</script>
+	</body>
+</html>
